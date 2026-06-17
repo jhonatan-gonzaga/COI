@@ -1,0 +1,50 @@
+{% extends "base_cliente.html" %}
+
+{% block content %}
+<section class="profile-header">
+    <div>
+        <p class="eyebrow">Perfil Público do Profissional</p>
+        <h1>{{ profissional.nome }}</h1>
+        <p class="muted">{{ profissional.telefone }}</p>
+        <p class="muted">{{ profissional.email }}</p>
+        <p class="tagline">
+            {% if especialidades %}
+                {{ especialidades | map(attribute="nome") | join(", ") }}
+            {% else %}
+                Especialidades não informadas
+            {% endif %}
+        </p>
+        <p class="rating">★ {{ profissional.nota_media }} de média</p>
+    </div>
+    <a class="btn primary" href="{{ url_for('cliente_solicitar_servico', profissional_id=profissional.id) }}">Solicitar Orçamento / Serviço</a>
+</section>
+
+<section class="split">
+    <div>
+        <h2>Galeria de Portfólio</h2>
+        <div class="gallery">
+            {% for imagem in imagens %}
+                <figure>
+                    <img src="{{ url_for('static', filename='uploads/' ~ imagem.caminho_pasta) }}" alt="{{ imagem.descricao }}">
+                    <figcaption>{{ imagem.descricao }}</figcaption>
+                </figure>
+            {% else %}
+                <p class="empty">Este profissional ainda não adicionou imagens.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div>
+        <h2>Avaliações recebidas</h2>
+        <div class="review-list">
+            {% for avaliacao in avaliacoes %}
+                <article class="review">
+                    <strong>★ {{ avaliacao.nota }} - {{ avaliacao.cliente }}</strong>
+                    <p>{{ avaliacao.comentario }}</p>
+                </article>
+            {% else %}
+                <p class="empty">Nenhuma avaliação recebida.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

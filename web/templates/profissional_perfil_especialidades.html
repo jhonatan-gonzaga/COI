@@ -1,0 +1,28 @@
+{% extends "base_profissional.html" %}
+
+{% block content %}
+<section class="page-heading">
+    <p class="eyebrow">Ajustes de Perfil</p>
+    <h1>Perfil e Especialidades</h1>
+</section>
+<form method="post" class="form-card">
+    <label>Telefone
+        <input name="telefone" required value="{{ profissional.telefone }}">
+    </label>
+    <label>E-mail
+        <input type="email" name="email" required value="{{ profissional.email }}">
+    </label>
+    <fieldset class="checkbox-panel">
+        <legend>Especialidades</legend>
+        <div class="checkbox-grid">
+            {% for especialidade in especialidades %}
+                <label class="check">
+                    <input type="checkbox" name="especialidades" value="{{ especialidade.nome }}" {% if especialidade.nome in profissional.especialidades %}checked{% endif %}>
+                    <span>{{ especialidade.nome }}</span>
+                </label>
+            {% endfor %}
+        </div>
+    </fieldset>
+    <button class="btn primary" type="submit">Salvar Alterações de Perfil</button>
+</form>
+{% endblock %}

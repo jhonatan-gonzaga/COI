@@ -1,0 +1,29 @@
+{% extends "base_cliente.html" %}
+
+{% block content %}
+<section class="dashboard-hero">
+    <div>
+        <p class="eyebrow">Profissionais</p>
+        <h1>Buscar Profissionais</h1>
+    </div>
+    <form class="searchbar" method="get">
+        <input name="busca" value="{{ termo }}" placeholder="Nome ou especialidade">
+        <button class="btn primary" type="submit">Buscar</button>
+    </form>
+</section>
+
+<section class="card-grid">
+    {% for profissional in profissionais %}
+        <article class="pro-card">
+            <div class="avatar">{{ profissional.nome[:1] }}</div>
+            <h3>{{ profissional.nome }}</h3>
+            <p class="muted">{{ profissional.telefone }}</p>
+            <p class="muted">{{ profissional.especialidades or "Especialidades não informadas" }}</p>
+            <p class="rating">★ {{ profissional.nota_media }}</p>
+            <a href="{{ url_for('cliente_perfil_profissional', profissional_id=profissional.id) }}" class="btn">Ver Perfil</a>
+        </article>
+    {% else %}
+        <div class="empty">Nenhum profissional encontrado.</div>
+    {% endfor %}
+</section>
+{% endblock %}

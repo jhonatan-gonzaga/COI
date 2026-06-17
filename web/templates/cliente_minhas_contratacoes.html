@@ -1,0 +1,50 @@
+{% extends "base_cliente.html" %}
+
+{% block content %}
+<section class="page-heading">
+    <p class="eyebrow">Minhas Contratações</p>
+    <h1>Gerenciador de serviços contratados</h1>
+</section>
+
+{% for status, titulo in status_labels.items() %}
+    <section class="status-section">
+        <h2>{{ titulo }}</h2>
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Profissional</th>
+                        <th>Data</th>
+                        <th>Valor</th>
+                        <th>Endereço</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for servico in por_status.get(status, []) %}
+                        <tr>
+                            <td>{{ servico.descricao }}</td>
+                            <td>{{ servico.profissional }}</td>
+                            <td>{{ servico.data_prevista.strftime("%d/%m/%Y") }}</td>
+                            <td>R$ {{ "%.2f"|format(servico.valor) }}</td>
+                            <td>{{ servico.rua }}, {{ servico.numero }} - {{ servico.bairro }}</td>
+                            <td>
+                                {% if status == "CONCLUIDO" and not servico.avaliado %}
+                                    <a class="btn small primary" href="{{ url_for('cliente_avaliar_servico', servico_id=servico.id) }}">Avaliar Profissional</a>
+                                {% elif status == "CONCLUIDO" and servico.avaliado %}
+                                    <span class="badge">Serviço já avaliado</span>
+                                {% else %}
+                                    <span class="badge">{{ titulo }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="6">Nenhum serviço nesta etapa.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endfor %}
+{% endblock %}

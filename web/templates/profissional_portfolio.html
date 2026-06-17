@@ -1,0 +1,52 @@
+{% extends "base_profissional.html" %}
+
+{% block content %}
+<section class="profile-header">
+    <div>
+        <p class="eyebrow">Gerenciamento do Portfólio</p>
+        <h1>{{ profissional.nome }}</h1>
+    </div>
+</section>
+
+<form method="post" enctype="multipart/form-data" class="form-card">
+    <label>Imagem
+        <input type="file" name="imagem" accept="image/*" required>
+    </label>
+    <label>Descrição
+        <textarea name="descricao" rows="3" required></textarea>
+    </label>
+    <button class="btn primary" type="submit">Fazer Upload de Imagem</button>
+</form>
+
+<section class="split spaced">
+    <div>
+        <h2>Fotos adicionadas</h2>
+        <div class="gallery">
+            {% for imagem in imagens %}
+                <figure>
+                    <img src="{{ url_for('static', filename='uploads/' ~ imagem.caminho_pasta) }}" alt="{{ imagem.descricao }}">
+                    <figcaption>{{ imagem.descricao }}</figcaption>
+                    <form method="post" action="{{ url_for('profissional_excluir_imagem_portfolio', imagem_id=imagem.id) }}">
+                        <button class="btn danger small" type="submit">Excluir Foto</button>
+                    </form>
+                </figure>
+            {% else %}
+                <p class="empty">Nenhuma imagem cadastrada.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div>
+        <h2>Avaliações recebidas</h2>
+        <div class="review-list">
+            {% for avaliacao in avaliacoes %}
+                <article class="review">
+                    <strong>★ {{ avaliacao.nota }} - {{ avaliacao.cliente }}</strong>
+                    <p>{{ avaliacao.comentario }}</p>
+                </article>
+            {% else %}
+                <p class="empty">Nenhuma avaliação recebida.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

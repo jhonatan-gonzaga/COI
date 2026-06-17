@@ -1,0 +1,39 @@
+{% extends "base_public.html" %}
+
+{% block content %}
+<section class="page-heading">
+    <p class="eyebrow">Cadastro de Profissional</p>
+    <h1>Crie sua conta para oferecer serviços</h1>
+</section>
+<form method="post" class="form-card">
+    <label>Nome Completo
+        <input name="nome" required>
+    </label>
+    <label>Telefone
+        <input name="telefone" required>
+    </label>
+    <label>E-mail
+        <input type="email" name="email" required>
+    </label>
+    <div class="form-grid">
+        <label>Senha
+            <input type="password" name="senha" required>
+        </label>
+        <label>Confirmar Senha
+            <input type="password" name="confirmar_senha" required>
+        </label>
+    </div>
+    <fieldset class="checkbox-panel">
+        <legend>Especialidades</legend>
+        <div class="checkbox-grid">
+            {% for especialidade in especialidades %}
+                <label class="check">
+                    <input type="checkbox" name="especialidades" value="{{ especialidade.nome }}">
+                    <span>{{ especialidade.nome }}</span>
+                </label>
+            {% endfor %}
+        </div>
+    </fieldset>
+    <button class="btn primary" type="submit">Concluir Cadastro de Profissional</button>
+</form>
+{% endblock %}

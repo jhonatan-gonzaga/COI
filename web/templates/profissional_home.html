@@ -1,0 +1,25 @@
+{% extends "base_profissional.html" %}
+
+{% block content %}
+<section class="profile-header">
+    <div>
+        <p class="eyebrow">Painel do Profissional</p>
+        <h1>{{ profissional.nome }}</h1>
+        <p class="tagline">{{ profissional.especialidades or "Especialidades não informadas" }}</p>
+        <p class="rating">★ {{ profissional.nota_media }} nota média</p>
+    </div>
+    <a class="btn primary" href="{{ url_for('profissional_portfolio') }}">Portfólio</a>
+</section>
+
+<section class="status-section">
+    <h2>Pedidos Recebidos</h2>
+    {% set servicos = pedidos %}
+    {% include "profissional_servicos_tabela.html" %}
+</section>
+
+<section class="status-section">
+    <h2>Serviços Ativos</h2>
+    {% set servicos = ativos %}
+    {% include "profissional_servicos_tabela.html" %}
+</section>
+{% endblock %}

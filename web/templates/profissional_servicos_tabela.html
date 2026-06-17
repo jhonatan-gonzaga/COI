@@ -1,0 +1,43 @@
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Serviço</th>
+                <th>Endereço</th>
+                <th>Data</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for servico in servicos %}
+                <tr>
+                    <td>{{ servico.cliente }}</td>
+                    <td>{{ servico.descricao }}</td>
+                    <td>{{ servico.rua }}, {{ servico.numero }} - {{ servico.bairro }}</td>
+                    <td>{{ servico.data_prevista.strftime("%d/%m/%Y") }}</td>
+                    <td>R$ {{ "%.2f"|format(servico.valor) }}</td>
+                    <td><span class="badge">{{ status_labels[servico.status] }}</span></td>
+                    <td class="row-actions">
+                        {% if servico.status == "AGUARDANDO" %}
+                            <form method="post" action="{{ url_for('profissional_aceitar_servico', servico_id=servico.id) }}">
+                                <button class="btn small primary" type="submit">Aceitar Serviço</button>
+                            </form>
+                            <form method="post" action="{{ url_for('profissional_recusar_servico', servico_id=servico.id) }}">
+                                <button class="btn small danger" type="submit">Recusar</button>
+                            </form>
+                        {% elif servico.status == "EM_ANDAMENTO" %}
+                            <form method="post" action="{{ url_for('profissional_concluir_servico', servico_id=servico.id) }}">
+                                <button class="btn small primary" type="submit">Concluir Serviço</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="7">Nenhum serviço nesta lista.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

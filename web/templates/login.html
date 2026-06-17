@@ -1,0 +1,23 @@
+{% extends "base_public.html" %}
+
+{% block content %}
+<section class="auth-shell">
+    <div class="auth-panel">
+        <p class="eyebrow">Acesso geral</p>
+        <h1>Entrar no Conecta Obras</h1>
+        <p class="muted">Acesse sua conta de cliente ou profissional autônomo.</p>
+        <form method="post" class="form">
+            <label>E-mail
+                <input type="email" name="email" required>
+            </label>
+            <label>Senha
+                <input type="password" name="senha" required>
+            </label>
+            <button class="btn primary wide" type="submit">Entrar</button>
+        </form>
+        <div class="auth-links">
+            <a href="{{ url_for('escolha_perfil') }}">Cadastre-se na plataforma</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

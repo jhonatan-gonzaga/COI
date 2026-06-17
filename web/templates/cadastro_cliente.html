@@ -1,0 +1,28 @@
+{% extends "base_public.html" %}
+
+{% block content %}
+<section class="page-heading">
+    <p class="eyebrow">Cadastro de Cliente</p>
+    <h1>Crie sua conta para contratar profissionais</h1>
+</section>
+<form method="post" class="form-card">
+    <label>Nome Completo
+        <input name="nome" required>
+    </label>
+    <label>Telefone
+        <input name="telefone" required>
+    </label>
+    <label>E-mail
+        <input type="email" name="email" required>
+    </label>
+    <div class="form-grid">
+        <label>Senha
+            <input type="password" name="senha" required>
+        </label>
+        <label>Confirmar Senha
+            <input type="password" name="confirmar_senha" required>
+        </label>
+    </div>
+    <button class="btn primary" type="submit">Concluir Cadastro de Cliente</button>
+</form>
+{% endblock %}

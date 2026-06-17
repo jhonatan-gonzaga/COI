@@ -1,0 +1,42 @@
+{% extends "base_cliente.html" %}
+
+{% block content %}
+<section class="dashboard-hero">
+    <div>
+        <p class="eyebrow">Painel do Cliente</p>
+        <h1>Encontre profissionais locais disponíveis</h1>
+    </div>
+    <form class="searchbar" method="get" action="{{ url_for('cliente_home') }}">
+        <input name="busca" value="{{ termo }}" placeholder="Buscar por especialidade ou palavra-chave">
+        <button class="btn primary" type="submit">Buscar</button>
+    </form>
+</section>
+
+<section class="section-title">
+    <h2>Categorias</h2>
+</section>
+<div class="category-row">
+    {% for especialidade in especialidades %}
+        <a class="badge" href="{{ url_for('cliente_profissionais', busca=especialidade.nome) }}">{{ especialidade.nome }}</a>
+    {% endfor %}
+</div>
+
+<section class="section-title spaced">
+    <h2>Profissionais</h2>
+    <a class="btn secondary" href="{{ url_for('cliente_minhas_contratacoes') }}">Minhas Contratações</a>
+</section>
+<section class="card-grid">
+    {% for profissional in profissionais %}
+        <article class="pro-card">
+            <div class="avatar">{{ profissional.nome[:1] }}</div>
+            <h3>{{ profissional.nome }}</h3>
+            <p class="muted">{{ profissional.telefone }}</p>
+            <p class="muted">{{ profissional.especialidades or "Especialidades não informadas" }}</p>
+            <p class="rating">★ {{ profissional.nota_media }} <span>({{ profissional.total_avaliacoes }} avaliações)</span></p>
+            <a href="{{ url_for('cliente_perfil_profissional', profissional_id=profissional.id) }}" class="btn">Ver Perfil</a>
+        </article>
+    {% else %}
+        <div class="empty">Nenhum profissional encontrado.</div>
+    {% endfor %}
+</section>
+{% endblock %}

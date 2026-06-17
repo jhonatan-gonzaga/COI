@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10243f">
+    <title>Conecta Obras Itacoatiara Web</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <a class="brand" href="{{ url_for('login') }}">Conecta Obras</a>
+        <nav class="navlinks" aria-label="Navegação pública">
+            <a href="{{ url_for('login') }}">Entrar</a>
+            <a class="nav-action" href="{{ url_for('escolha_perfil') }}">Criar conta</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <section class="alerts">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

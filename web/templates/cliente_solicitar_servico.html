@@ -1,0 +1,33 @@
+{% extends "base_cliente.html" %}
+
+{% block content %}
+<section class="page-heading">
+    <p class="eyebrow">Solicitação de Orçamento / Serviço</p>
+    <h1>Enviar solicitação para {{ profissional.nome }}</h1>
+</section>
+<form method="post" class="form-card">
+    <label>Descrição do serviço
+        <textarea name="descricao" rows="5" required></textarea>
+    </label>
+    <div class="form-grid">
+        <label>Data prevista
+            <input type="date" name="data_prevista" required>
+        </label>
+        <label>Valor proposto
+            <input type="number" step="0.01" min="0" name="valor" required>
+        </label>
+    </div>
+    <div class="form-grid three">
+        <label>Rua
+            <input name="rua" required>
+        </label>
+        <label>Número
+            <input name="numero" required>
+        </label>
+        <label>Bairro
+            <input name="bairro" required>
+        </label>
+    </div>
+    <button class="btn primary" type="submit">Enviar Solicitação de Serviço</button>
+</form>
+{% endblock %}

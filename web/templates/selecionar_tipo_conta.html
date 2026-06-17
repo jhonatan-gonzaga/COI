@@ -1,0 +1,18 @@
+{% extends "base_public.html" %}
+
+{% block content %}
+<section class="choice">
+    <p class="eyebrow">Criar conta</p>
+    <h1>Selecione o tipo de conta que deseja criar para o Conecta Obras</h1>
+    <div class="choice-grid">
+        <a class="choice-card" href="{{ url_for('cadastro_cliente') }}">
+            <span>Quero contratar serviços</span>
+            <strong>Cadastrar como Cliente</strong>
+        </a>
+        <a class="choice-card accent" href="{{ url_for('cadastro_profissional') }}">
+            <span>Quero oferecer serviços</span>
+            <strong>Cadastrar como Profissional Autônomo</strong>
+        </a>
+    </div>
+</section>
+{% endblock %}
