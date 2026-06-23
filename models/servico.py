@@ -2,16 +2,21 @@
 
 
 class Servico:
+    STATUS_AGUARDANDO = "AGUARDANDO"
+    STATUS_EM_ANDAMENTO = "EM_ANDAMENTO"
+    STATUS_CONCLUIDO = "CONCLUIDO"
+    STATUS_CANCELADO = "CANCELADO"
+
     def __init__(
         self,
-        descricao,
+        descricao: str,
         data_prevista,
         valor,
-        status,
+        status: str,
         cliente,
         profissional,
         endereco,
-        id=None,
+        id: int | None = None,
     ):
         self.id = id
         self.descricao = descricao
@@ -22,14 +27,17 @@ class Servico:
         self.profissional = profissional
         self.endereco = endereco
 
-    def concluir(self):
-        self.status = "Concluído"
+    def concluir(self) -> None:
+        self.status = self.STATUS_CONCLUIDO
 
-    def cancelar(self):
-        self.status = "Cancelado"
+    def cancelar(self) -> None:
+        self.status = self.STATUS_CANCELADO
 
-    def alterar_status(self, novo_status):
+    def alterar_status(self, novo_status: str) -> None:
         self.status = novo_status
 
-    def calcular_valor_final(self):
+    def calcular_valor_final(self) -> float:
         return self.valor
+
+    def __str__(self) -> str:
+        return f"{self.descricao} - {self.status}"

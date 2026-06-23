@@ -1,10 +1,9 @@
-"""Cria automaticamente o banco e as tabelas usadas pela aplicação."""
+"""Cria as tabelas usadas pela aplicacao."""
 
 import os
 import sys
 from pathlib import Path
 
-import psycopg2
 from dotenv import load_dotenv
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -17,13 +16,7 @@ load_dotenv()
 
 def create_database_if_not_exists():
     db_name = os.getenv("DB_NAME", "conecta_obras")
-    conn = psycopg2.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        port=os.getenv("DB_PORT", "5432"),
-        dbname=os.getenv("DB_ADMIN_DB", "postgres"),
-        user=os.getenv("DB_USER", "postgres"),
-        password=os.getenv("DB_PASSWORD", "postgres"),
-    )
+    conn = get_connection(os.getenv("DB_ADMIN_DB", "postgres"))
     conn.autocommit = True
     cur = conn.cursor()
     cur.execute("SELECT 1 FROM pg_database WHERE datname = %s", (db_name,))
@@ -34,8 +27,9 @@ def create_database_if_not_exists():
     conn.close()
 
 
-def create_tables():
-    create_database_if_not_exists()
+def create_tables(ensure_database=False):
+    if ensure_database:
+        create_database_if_not_exists()
     conn = get_connection()
     cur = conn.cursor()
 
@@ -147,5 +141,5 @@ def create_tables():
 
 
 if __name__ == "__main__":
-    create_tables()
+    create_tables(ensure_database=True)
     print("Banco e tabelas criados com sucesso.")
