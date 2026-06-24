@@ -5,6 +5,7 @@ from models.cliente import Cliente
 
 
 class ClienteRepository:
+    #Cria um cliente colocando todas as usas informaçõesn a tabela 'usuarios'
     def criar(self, cliente):
         conn = get_connection()
         cur = conn.cursor()
@@ -18,7 +19,8 @@ class ClienteRepository:
         cur.close()
         conn.close()
         return usuario_id
-
+    
+    #Lista todos os clientes (pertencente as tabelas 'usuarios' e 'cliente')
     def listar(self):
         conn = get_connection()
         cur = conn.cursor()
@@ -34,7 +36,9 @@ class ClienteRepository:
         cur.close()
         conn.close()
         return clientes
-
+    
+    #Procura um cliente específico em usuários.
+    #Faz isso a partir do id, perguntando se o usuário também existe na tabela 'clientes', o que indica que é realmente um cliente.
     def buscar_por_id(self, cliente_id):
         conn = get_connection()
         cur = conn.cursor()
@@ -54,6 +58,7 @@ class ClienteRepository:
             return None
         return Cliente(id=row[0], nome=row[1], telefone=row[2], email=row[3], senha=row[4])
 
+    #Atualiza os dados relacionados a um cliente específico na tabela 'usuarios'. 
     def atualizar(self, cliente):
         conn = get_connection()
         cur = conn.cursor()
@@ -65,6 +70,7 @@ class ClienteRepository:
         cur.close()
         conn.close()
 
+    #Exclui o cliente da tabela 'cliente' no banco.
     def excluir(self, cliente_id):
         conn = get_connection()
         cur = conn.cursor()
