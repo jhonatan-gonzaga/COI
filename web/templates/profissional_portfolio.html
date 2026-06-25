@@ -5,17 +5,20 @@
     <div>
         <p class="eyebrow">Gerenciamento do Portfólio</p>
         <h1>{{ profissional.nome }}</h1>
+        <p class="muted">Adicione fotos dos seus trabalhos para atrair mais clientes.</p>
     </div>
 </section>
 
 <form method="post" enctype="multipart/form-data" class="form-card">
-    <label>Imagem
-        <input type="file" name="imagem" accept="image/*" required>
-    </label>
-    <label>Descrição
-        <textarea name="descricao" rows="3" required></textarea>
-    </label>
-    <button class="btn primary" type="submit">Fazer Upload de Imagem</button>
+    <div class="form-grid">
+        <label>Imagem do trabalho
+            <input type="file" name="imagem" accept="image/*" required>
+        </label>
+        <label>Descrição
+            <textarea name="descricao" rows="3" required placeholder="Descreva o trabalho realizado…"></textarea>
+        </label>
+    </div>
+    <button class="btn primary" style="justify-self: start;" type="submit">Adicionar ao Portfólio</button>
 </form>
 
 <section class="split spaced">
@@ -31,7 +34,7 @@
                     </form>
                 </figure>
             {% else %}
-                <p class="empty">Nenhuma imagem cadastrada.</p>
+                <p class="empty">Nenhuma imagem cadastrada ainda. Adicione fotos dos seus trabalhos!</p>
             {% endfor %}
         </div>
     </div>
@@ -40,11 +43,11 @@
         <div class="review-list">
             {% for avaliacao in avaliacoes %}
                 <article class="review">
-                    <strong>★ {{ avaliacao.nota }} - {{ avaliacao.cliente }}</strong>
+                    <strong>★ {{ avaliacao.nota }} — {{ avaliacao.cliente }}</strong>
                     <p>{{ avaliacao.comentario }}</p>
                 </article>
             {% else %}
-                <p class="empty">Nenhuma avaliação recebida.</p>
+                <p class="empty">Nenhuma avaliação recebida ainda.</p>
             {% endfor %}
         </div>
     </div>

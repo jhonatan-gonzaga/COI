@@ -9,16 +9,16 @@
 <form method="post" class="form-card">
     <label>Nota de 1 a 5
         <select name="nota" required>
-            <option value="5">5 - Excelente</option>
-            <option value="4">4 - Muito bom</option>
-            <option value="3">3 - Bom</option>
-            <option value="2">2 - Regular</option>
-            <option value="1">1 - Ruim</option>
+            <option value="5">★★★★★  5 — Excelente</option>
+            <option value="4">★★★★☆  4 — Muito bom</option>
+            <option value="3">★★★☆☆  3 — Bom</option>
+            <option value="2">★★☆☆☆  2 — Regular</option>
+            <option value="1">★☆☆☆☆  1 — Ruim</option>
         </select>
     </label>
     <label>Comentário
-        <textarea name="comentario" rows="5" required></textarea>
+        <textarea name="comentario" rows="5" required placeholder="Conte como foi o serviço prestado…"></textarea>
     </label>
-    <button class="btn primary" type="submit">Publicar Avaliação</button>
+    <button class="btn primary wide" type="submit">Publicar Avaliação</button>
 </form>
 {% endblock %}

@@ -1,4 +1,17 @@
 venv/
+.venv/
 __pycache__/
 *.pyc
 .env
+
+# Banco de dados local
+*.db
+
+# Uploads de usuários (gerados em runtime)
+web/static/uploads/
+
+# macOS
+.DS_Store
+
+# Assets de origem (já copiados para web/static/img/)
+repositories/assets/

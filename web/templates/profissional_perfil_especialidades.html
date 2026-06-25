@@ -4,14 +4,17 @@
 <section class="page-heading">
     <p class="eyebrow">Ajustes de Perfil</p>
     <h1>Perfil e Especialidades</h1>
+    <p class="muted">Mantenha seus dados e especialidades sempre atualizados.</p>
 </section>
 <form method="post" class="form-card">
-    <label>Telefone
-        <input name="telefone" required value="{{ profissional.telefone }}">
-    </label>
-    <label>E-mail
-        <input type="email" name="email" required value="{{ profissional.email }}">
-    </label>
+    <div class="form-grid">
+        <label>Telefone
+            <input name="telefone" required value="{{ profissional.telefone }}" placeholder="(92) 99999-9999">
+        </label>
+        <label>E-mail
+            <input type="email" name="email" required value="{{ profissional.email }}" placeholder="seu@email.com">
+        </label>
+    </div>
     <fieldset class="checkbox-panel">
         <legend>Especialidades</legend>
         <div class="checkbox-grid">
@@ -23,6 +26,6 @@
             {% endfor %}
         </div>
     </fieldset>
-    <button class="btn primary" type="submit">Salvar Alterações de Perfil</button>
+    <button class="btn primary wide" type="submit">Salvar Alterações de Perfil</button>
 </form>
 {% endblock %}

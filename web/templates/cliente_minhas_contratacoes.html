@@ -26,21 +26,21 @@
                         <tr>
                             <td>{{ servico.descricao }}</td>
                             <td>{{ servico.profissional }}</td>
-                            <td>{{ servico.data_prevista.strftime("%d/%m/%Y") }}</td>
+                            <td>{% if servico.data_prevista is string %}{{ servico.data_prevista[8:10] }}/{{ servico.data_prevista[5:7] }}/{{ servico.data_prevista[0:4] }}{% else %}{{ servico.data_prevista.strftime("%d/%m/%Y") }}{% endif %}</td>
                             <td>R$ {{ "%.2f"|format(servico.valor) }}</td>
-                            <td>{{ servico.rua }}, {{ servico.numero }} - {{ servico.bairro }}</td>
+                            <td>{{ servico.rua }}, {{ servico.numero }} — {{ servico.bairro }}</td>
                             <td>
                                 {% if status == "CONCLUIDO" and not servico.avaliado %}
                                     <a class="btn small primary" href="{{ url_for('cliente_avaliar_servico', servico_id=servico.id) }}">Avaliar Profissional</a>
                                 {% elif status == "CONCLUIDO" and servico.avaliado %}
-                                    <span class="badge">Serviço já avaliado</span>
+                                    <span class="badge">✓ Avaliado</span>
                                 {% else %}
                                     <span class="badge">{{ titulo }}</span>
                                 {% endif %}
                             </td>
                         </tr>
                     {% else %}
-                        <tr><td colspan="6">Nenhum serviço nesta etapa.</td></tr>
+                        <tr><td colspan="6" style="color: var(--muted); font-style: italic;">Nenhum serviço nesta etapa.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

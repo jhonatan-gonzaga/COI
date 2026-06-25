@@ -14,29 +14,29 @@
         <tbody>
             {% for servico in servicos %}
                 <tr>
-                    <td>{{ servico.cliente }}</td>
+                    <td><strong>{{ servico.cliente }}</strong></td>
                     <td>{{ servico.descricao }}</td>
-                    <td>{{ servico.rua }}, {{ servico.numero }} - {{ servico.bairro }}</td>
-                    <td>{{ servico.data_prevista.strftime("%d/%m/%Y") }}</td>
-                    <td>R$ {{ "%.2f"|format(servico.valor) }}</td>
+                    <td>{{ servico.rua }}, {{ servico.numero }} — {{ servico.bairro }}</td>
+                    <td>{% if servico.data_prevista is string %}{{ servico.data_prevista[8:10] }}/{{ servico.data_prevista[5:7] }}/{{ servico.data_prevista[0:4] }}{% else %}{{ servico.data_prevista.strftime("%d/%m/%Y") }}{% endif %}</td>
+                    <td><strong>R$ {{ "%.2f"|format(servico.valor) }}</strong></td>
                     <td><span class="badge">{{ status_labels[servico.status] }}</span></td>
                     <td class="row-actions">
                         {% if servico.status == "AGUARDANDO" %}
                             <form method="post" action="{{ url_for('profissional_aceitar_servico', servico_id=servico.id) }}">
-                                <button class="btn small primary" type="submit">Aceitar Serviço</button>
+                                <button class="btn small primary" type="submit">Aceitar</button>
                             </form>
                             <form method="post" action="{{ url_for('profissional_recusar_servico', servico_id=servico.id) }}">
                                 <button class="btn small danger" type="submit">Recusar</button>
                             </form>
                         {% elif servico.status == "EM_ANDAMENTO" %}
                             <form method="post" action="{{ url_for('profissional_concluir_servico', servico_id=servico.id) }}">
-                                <button class="btn small primary" type="submit">Concluir Serviço</button>
+                                <button class="btn small primary" type="submit">Concluir</button>
                             </form>
                         {% endif %}
                     </td>
                 </tr>
             {% else %}
-                <tr><td colspan="7">Nenhum serviço nesta lista.</td></tr>
+                <tr><td colspan="7" style="color: var(--muted); font-style: italic;">Nenhum serviço nesta lista.</td></tr>
             {% endfor %}
         </tbody>
     </table>
