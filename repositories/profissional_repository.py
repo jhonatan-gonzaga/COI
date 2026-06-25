@@ -5,6 +5,8 @@ from models.profissional_autonomo import ProfissionalAutonomo
 
 
 class ProfissionalRepository:
+
+    #cria o profissional colocando todas as suas informações na tabela 'usuarios'
     def criar(self, profissional):
         conn = get_connection()
         cur = conn.cursor()
@@ -38,6 +40,7 @@ class ProfissionalRepository:
         conn.close()
         return usuario_id
 
+    #lista todos os profissionais cadastrados,calculando a nota média da tabela avaliacoes
     def listar(self):
         conn = get_connection()
         cur = conn.cursor()
@@ -73,6 +76,7 @@ class ProfissionalRepository:
         conn.close()
         return profissionais
 
+    # lista todos os profissionais permitindo buscar por nome ou especialidade, trazendo a nota média da tabela avaliacoes
     def listar_com_metricas(self, termo=""):
         conn = get_connection()
         cur = conn.cursor()
@@ -99,11 +103,13 @@ class ProfissionalRepository:
         cur.close()
         conn.close()
         return profissionais
-
+    
+    # busca os profissionais por id
     def buscar_por_id(self, profissional_id):
         profissionais = [p for p in self.listar() if p.id == int(profissional_id)]
         return profissionais[0] if profissionais else None
-
+    
+    #Busca as informações básicas do profissional na tabela usuarios e calcula sua nota média na tabela avaliacoes para exibição pública
     def buscar_perfil_publico(self, profissional_id):
         conn = get_connection()
         cur = conn.cursor()
@@ -132,6 +138,7 @@ class ProfissionalRepository:
             "nota_media": float(row[4]),
         }
 
+    # busca o perfil do profissional trazendo seus dados gerais, a lista de fotos da tabela imagens e os comentários com os nomes dos clientes vindos da tabela avaliacoes
     def buscar_detalhes(self, profissional_id):
         profissionais = self.listar_com_metricas()
         profissional = next((p for p in profissionais if p["id"] == int(profissional_id)), None)
@@ -178,7 +185,8 @@ class ProfissionalRepository:
         cur.close()
         conn.close()
         return profissional
-
+    
+    # insere uma imagem na tabela imagens com o id do profissional relacionado
     def adicionar_imagem_portfolio(self, profissional_id, caminho_pasta, descricao):
         conn = get_connection()
         cur = conn.cursor()
@@ -193,6 +201,7 @@ class ProfissionalRepository:
         cur.close()
         conn.close()
 
+    # atualiza o telefone, especialidade e email do profissional
     def atualizar_perfil_e_especialidades(self, profissional_id, telefone, email, especialidades):
         conn = get_connection()
         cur = conn.cursor()
@@ -224,6 +233,7 @@ class ProfissionalRepository:
         cur.close()
         conn.close()
 
+    #Atualiza os dados do usuário com um id específico na tabela usuarios
     def atualizar(self, profissional):
         conn = get_connection()
         cur = conn.cursor()
@@ -251,6 +261,7 @@ class ProfissionalRepository:
         cur.close()
         conn.close()
 
+    #lista as especialidades da tabela especialidades, ordenadas por nome
     def listar_especialidades(self):
         conn = get_connection()
         cur = conn.cursor()
@@ -259,7 +270,8 @@ class ProfissionalRepository:
         cur.close()
         conn.close()
         return especialidades
-
+    
+    #lista as especialidades da tabela profissional_especialidades linkadas com o profissional
     def listar_especialidades_do_profissional(self, profissional_id):
         conn = get_connection()
         cur = conn.cursor()
@@ -280,7 +292,8 @@ class ProfissionalRepository:
         cur.close()
         conn.close()
         return especialidades
-
+    
+    #deleta a especialidade do profissional linkado na tabela de profissional_especialidade e cria uma nova especialidade na mesma tabela linkada a ele.
     def atualizar_especialidades(self, profissional_id, especialidades):
         conn = get_connection()
         cur = conn.cursor()
@@ -308,6 +321,7 @@ class ProfissionalRepository:
         cur.close()
         conn.close()
 
+    #deleta o profissional da tablea de usuarios
     def excluir(self, profissional_id):
         conn = get_connection()
         cur = conn.cursor()

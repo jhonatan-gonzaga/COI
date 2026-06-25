@@ -4,6 +4,7 @@ from database.connection import get_connection
 
 
 class ServicoRepository:
+    #cria um endereço na tabela enderecos e usa tal endereço para criar um serviço relacionado ao endereço
     def criar(self, dados):
         conn = get_connection()
         cur = conn.cursor()
@@ -34,7 +35,8 @@ class ServicoRepository:
         cur.close()
         conn.close()
         return servico_id
-
+    
+    # lista todas as informações dos serviços presentes no sistema
     def listar(self):
         conn = get_connection()
         cur = conn.cursor()
@@ -60,15 +62,18 @@ class ServicoRepository:
         cur.close()
         conn.close()
         return servicos
-
+    
+    # lista serviços criados por um cliente específico
     def listar_por_cliente(self, cliente_id):
         servicos = self.listar()
         return [servico for servico in servicos if servico["cliente_id"] == int(cliente_id)]
-
+    
+    #lista todos os serviços que estão vinculados a um porfissional específico
     def listar_por_profissional(self, profissional_id):
         servicos = self.listar()
         return [servico for servico in servicos if servico["profissional_id"] == int(profissional_id)]
-
+    
+    #faz o mesmo do anterior, porém mostra apenas os serviços com status 'AGUARDANDO' ou 'EM_ANDAMENTO'
     def listar_pedidos_profissional(self, profissional_id):
         conn = get_connection()
         cur = conn.cursor()
@@ -90,11 +95,13 @@ class ServicoRepository:
         cur.close()
         conn.close()
         return servicos
-
+    
+    #busco os serviços pelo id do mesmo
     def buscar_por_id(self, servico_id):
         servicos = [s for s in self.listar() if s["id"] == int(servico_id)]
         return servicos[0] if servicos else None
-
+    
+    #atualiza todos os dados de um serviço específico
     def atualizar(self, servico_id, dados):
         conn = get_connection()
         cur = conn.cursor()
@@ -128,6 +135,7 @@ class ServicoRepository:
         cur.close()
         conn.close()
 
+    #altera somente o status de um serviço com base em seu id
     def alterar_status(self, servico_id, status):
         conn = get_connection()
         cur = conn.cursor()
@@ -136,6 +144,7 @@ class ServicoRepository:
         cur.close()
         conn.close()
 
+    # verifica se o serviço foi solicitado por um cliente específico
     def pertence_ao_cliente(self, servico_id, cliente_id):
         conn = get_connection()
         cur = conn.cursor()
@@ -147,7 +156,8 @@ class ServicoRepository:
         cur.close()
         conn.close()
         return existe
-
+    
+    #exclui um serviço com base em seu id
     def excluir(self, servico_id):
         conn = get_connection()
         cur = conn.cursor()

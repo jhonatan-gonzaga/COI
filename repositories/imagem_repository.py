@@ -4,6 +4,7 @@ from database.connection import get_connection
 
 
 class ImagemRepository:
+    #cria uma imagem simplesmente colocando o caminha da pasta na tabela 'imagens'
     def criar(self, profissional_id, caminho_pasta, descricao):
         conn = get_connection()
         cur = conn.cursor()
@@ -20,7 +21,8 @@ class ImagemRepository:
         cur.close()
         conn.close()
         return imagem_id
-
+    
+    #lista todos os uploads (de imagem) feito por todos os profissionais
     def listar_por_profissional(self, profissional_id):
         conn = get_connection()
         cur = conn.cursor()
@@ -45,7 +47,8 @@ class ImagemRepository:
         cur.close()
         conn.close()
         return imagens
-
+    
+    #Busca uma imagem específica no banco que pertence ao profissional específico
     def buscar_do_profissional(self, imagem_id, profissional_id):
         conn = get_connection()
         cur = conn.cursor()
@@ -68,7 +71,8 @@ class ImagemRepository:
             "descricao": row[2],
             "profissional_id": row[3],
         }
-
+    
+    #exclui uma imagem específica do profissional específico
     def excluir_do_profissional(self, imagem_id, profissional_id):
         conn = get_connection()
         cur = conn.cursor()
