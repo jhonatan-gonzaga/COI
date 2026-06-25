@@ -8,7 +8,9 @@
         <p class="tagline">{{ profissional.especialidades or "Especialidades não informadas" }}</p>
         <p class="rating">★ {{ profissional.nota_media }} nota média</p>
     </div>
-    <a class="btn primary" href="{{ url_for('profissional_portfolio') }}">Portfólio</a>
+    <a class="btn primary" href="{{ url_for('profissional_portfolio') }}">
+        Ver Portfólio
+    </a>
 </section>
 
 <section class="status-section">

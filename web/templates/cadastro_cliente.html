@@ -1,28 +1,651 @@
-{% extends "base_public.html" %}
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0E3462">
+    <title>Cadastro de Cliente — Conecta Obras</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=SN+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
 
-{% block content %}
-<section class="page-heading">
-    <p class="eyebrow">Cadastro de Cliente</p>
-    <h1>Crie sua conta para contratar profissionais</h1>
-</section>
-<form method="post" class="form-card">
-    <label>Nome Completo
-        <input name="nome" required>
-    </label>
-    <label>Telefone
-        <input name="telefone" required>
-    </label>
-    <label>E-mail
-        <input type="email" name="email" required>
-    </label>
-    <div class="form-grid">
-        <label>Senha
-            <input type="password" name="senha" required>
-        </label>
-        <label>Confirmar Senha
-            <input type="password" name="confirmar_senha" required>
-        </label>
-    </div>
-    <button class="btn primary" type="submit">Concluir Cadastro de Cliente</button>
-</form>
-{% endblock %}
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            background: #EEF2F8;
+            font-family: 'SN Pro', ui-sans-serif, system-ui, sans-serif;
+            color: #111111;
+            line-height: 1.5;
+        }
+
+        .pg-wrap {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 14px 14px 0;
+        }
+
+        /* ── NAVBAR ──────────────────────────────────── */
+        .lp-nav {
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 14px;
+            max-width: 1120px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .lp-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 12px 26px 12px 18px;
+            border-radius: 0 0 26px 0;
+            text-decoration: none;
+            color: #111111;
+            flex-shrink: 0;
+        }
+
+        .lp-brand-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: #fff;
+            flex-shrink: 0;
+            display: block;
+        }
+
+        .lp-brand-name {
+            font-family: 'Anton', sans-serif;
+            font-size: 23px;
+            letter-spacing: .01em;
+            white-space: nowrap;
+            color: #0E3462;
+        }
+
+        .lp-nav-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            flex: 1;
+            background: #0E3462;
+            color: #fff;
+            padding: 11px 14px 11px 28px;
+            border-radius: 24px;
+        }
+
+        .lp-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: rgba(255,255,255,.8);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color .15s;
+        }
+
+        .lp-back:hover { color: #fff; }
+
+        .lp-login-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            color: #0E3462;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            background: #fff;
+            border-radius: 9999px;
+            padding: 7px 18px 7px 8px;
+            transition: background .18s;
+        }
+
+        .lp-login-nav:hover { background: #FDEBD6; }
+
+        .lp-login-nav-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #EC8316;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* ── FLASH ───────────────────────────────────── */
+        .pg-alerts {
+            max-width: 1120px;
+            width: 100%;
+            margin: 14px auto 0;
+        }
+
+        .pg-alert {
+            background: #fff0f0;
+            border: 1px solid #fca5a5;
+            border-left: 4px solid #DC2626;
+            border-radius: 12px;
+            color: #7f1d1d;
+            padding: 12px 16px;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        /* ── MAIN ────────────────────────────────────── */
+        .pg-main {
+            max-width: 1120px;
+            width: 100%;
+            margin: 24px auto 32px;
+            flex: 1;
+        }
+
+        /* ── REGISTER CARD ───────────────────────────── */
+        .reg-card {
+            display: flex;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px -20px rgba(14, 52, 98, 0.35);
+        }
+
+        /* ── LEFT PANEL ──────────────────────────────── */
+        .reg-panel {
+            width: 38%;
+            flex-shrink: 0;
+            background: #0E3462;
+            padding: 52px 44px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative circles */
+        .reg-panel::before {
+            content: '';
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: rgba(236, 131, 22, .1);
+            bottom: -70px;
+            right: -90px;
+        }
+
+        .reg-panel::after {
+            content: '';
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.05);
+            top: -30px;
+            left: -40px;
+        }
+
+        .reg-panel-logo {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: #fff;
+            padding: 3px;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .reg-panel-logo-fallback {
+            display: none;
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            background: #EC8316;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Anton', sans-serif;
+            font-size: 20px;
+            color: #0E3462;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+
+        .reg-panel-eyebrow {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .2em;
+            color: #EC8316;
+            text-transform: uppercase;
+            margin: 0 0 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .reg-panel-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 36px;
+            line-height: 1;
+            color: #fff;
+            margin: 0 0 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .reg-panel-sub {
+            color: #A8BCDA;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.6;
+            margin: 0 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .reg-features {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .reg-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .reg-feature-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(236, 131, 22, .18);
+            border: 1px solid rgba(236, 131, 22, .25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #EC8316;
+        }
+
+        .reg-feature-text strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .reg-feature-text span {
+            font-size: 13px;
+            color: #A8BCDA;
+        }
+
+        /* ── RIGHT FORM ──────────────────────────────── */
+        .reg-form-wrap {
+            flex: 1;
+            background: #fff;
+            padding: 52px 52px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .reg-form-eyebrow {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: #EC8316;
+            margin: 0 0 10px;
+        }
+
+        .reg-form-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 32px;
+            line-height: 1;
+            color: #0E3462;
+            margin: 0 0 8px;
+        }
+
+        .reg-form-sub {
+            font-size: 14px;
+            color: #5C6B82;
+            margin: 0 0 32px;
+        }
+
+        /* Fields */
+        .reg-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .reg-field label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            letter-spacing: .01em;
+        }
+
+        .reg-field input {
+            height: 48px;
+            background: #F4F8FD;
+            border: 1.5px solid #DCE4F0;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-size: 15px;
+            font-family: 'SN Pro', sans-serif;
+            color: #111;
+            outline: none;
+            transition: border-color .18s, background .18s, box-shadow .18s;
+        }
+
+        .reg-field input:focus {
+            border-color: #0E3462;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(14, 52, 98, .1);
+        }
+
+        .reg-field input::placeholder { color: #A0AEC0; }
+
+        .reg-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        /* Submit */
+        .reg-submit {
+            margin-top: 10px;
+            width: 100%;
+            height: 52px;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            font-family: 'SN Pro', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            background: linear-gradient(to right, #0E3462 50%, #EC8316 50%);
+            background-size: 220% 100%;
+            background-position: 100% 0;
+            color: #fff;
+            transition: background-position .55s cubic-bezier(.4, 0, .2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .reg-submit:hover { background-position: 0 0; }
+
+        /* Divider */
+        .reg-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 16px;
+            color: #DCE4F0;
+            font-size: 12px;
+            color: #A0AEC0;
+        }
+
+        .reg-divider::before,
+        .reg-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #DCE4F0;
+        }
+
+        .reg-login-link {
+            text-align: center;
+            font-size: 14px;
+            color: #5C6B82;
+        }
+
+        .reg-login-link a {
+            color: #0E3462;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            text-decoration-color: #DCE4F0;
+            transition: text-decoration-color .15s;
+        }
+
+        .reg-login-link a:hover { text-decoration-color: #0E3462; }
+
+        /* Back link */
+        .reg-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #5C6B82;
+            text-decoration: none;
+            margin-bottom: 28px;
+            font-weight: 500;
+            transition: color .15s;
+        }
+
+        .reg-back-link:hover { color: #0E3462; }
+
+        /* ── FOOTER ──────────────────────────────────── */
+        .pg-footer {
+            max-width: 1120px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 18px 4px;
+            font-size: 13px;
+            color: #5C6B82;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* ── RESPONSIVE ──────────────────────────────── */
+        @media (max-width: 860px) {
+            .lp-nav { flex-direction: column; gap: 8px; }
+            .lp-brand { border-radius: 0; }
+            .lp-nav-right { flex-wrap: wrap; gap: 12px; padding: 12px 16px; border-radius: 16px; }
+
+            .reg-card { flex-direction: column; }
+            .reg-panel { width: 100%; padding: 36px 28px; }
+            .reg-panel::before { width: 180px; height: 180px; }
+            .reg-features { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+            .reg-form-wrap { padding: 36px 28px 32px; }
+            .reg-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 520px) {
+            .pg-wrap { padding: 8px 8px 0; }
+            .pg-main { margin: 16px auto 24px; }
+            .reg-form-wrap { padding: 28px 20px 24px; }
+            .reg-panel { padding: 28px 20px; }
+            .reg-features { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="pg-wrap">
+
+    <!-- ── NAVBAR ────────────────────────────────────────── -->
+    <nav class="lp-nav" aria-label="Navegação principal">
+        <a class="lp-brand" href="{{ url_for('escolha_perfil') }}">
+            <img
+                class="lp-brand-logo"
+                src="{{ url_for('static', filename='img/logo.png') }}"
+                alt="Conecta Obras logo"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            >
+            <span style="display:none; width:44px; height:44px; border-radius:11px; background:#EC8316; align-items:center; justify-content:center; font-family:'Anton',sans-serif; font-size:17px; color:#0E3462; flex-shrink:0;">CO</span>
+            <span class="lp-brand-name">CONECTA&nbsp;OBRAS</span>
+        </a>
+        <div class="lp-nav-right">
+            <a class="lp-back" href="{{ url_for('escolha_perfil') }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m15 18-6-6 6-6"></path>
+                </svg>
+                Voltar
+            </a>
+            <a class="lp-login-nav" href="{{ url_for('login') }}">
+                <span class="lp-login-nav-dot">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+                </span>
+                Já tenho conta
+            </a>
+        </div>
+    </nav>
+
+    <!-- ── FLASH MESSAGES ────────────────────────────────── -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="pg-alerts">
+                {% for message in messages %}
+                    <div class="pg-alert">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ── MAIN ──────────────────────────────────────────── -->
+    <main class="pg-main">
+        <div class="reg-card">
+
+            <!-- LEFT PANEL -->
+            <aside class="reg-panel">
+                <img
+                    class="reg-panel-logo"
+                    src="{{ url_for('static', filename='img/logo.png') }}"
+                    alt="Logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                >
+                <span class="reg-panel-logo-fallback">CO</span>
+
+                <p class="reg-panel-eyebrow">Conecta Obras</p>
+                <h2 class="reg-panel-title">SEJA BEM-VINDO</h2>
+                <p class="reg-panel-sub">Crie sua conta de cliente e encontre os melhores profissionais de Itacoatiara.</p>
+
+                <ul class="reg-features">
+                    <li class="reg-feature">
+                        <span class="reg-feature-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </span>
+                        <div class="reg-feature-text">
+                            <strong>Busque profissionais</strong>
+                            <span>Filtre por especialidade e avaliação</span>
+                        </div>
+                    </li>
+                    <li class="reg-feature">
+                        <span class="reg-feature-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </span>
+                        <div class="reg-feature-text">
+                            <strong>Avalie os serviços</strong>
+                            <span>Compartilhe sua experiência</span>
+                        </div>
+                    </li>
+                    <li class="reg-feature">
+                        <span class="reg-feature-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </span>
+                        <div class="reg-feature-text">
+                            <strong>Histórico completo</strong>
+                            <span>Acompanhe todas as contratações</span>
+                        </div>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- RIGHT FORM -->
+            <div class="reg-form-wrap">
+                <a class="reg-back-link" href="{{ url_for('escolha_perfil') }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m15 18-6-6 6-6"></path>
+                    </svg>
+                    Voltar à seleção de perfil
+                </a>
+
+                <p class="reg-form-eyebrow">Novo cadastro</p>
+                <h1 class="reg-form-title">CRIAR CONTA CLIENTE</h1>
+                <p class="reg-form-sub">Preencha seus dados para começar a contratar.</p>
+
+                <form method="post">
+                    <div class="reg-field">
+                        <label for="nome">Nome Completo</label>
+                        <input id="nome" name="nome" required placeholder="Seu nome completo" autocomplete="name">
+                    </div>
+
+                    <div class="reg-field">
+                        <label for="telefone">Telefone</label>
+                        <input id="telefone" name="telefone" required placeholder="(92) 99999-9999" autocomplete="tel">
+                    </div>
+
+                    <div class="reg-field">
+                        <label for="email">E-mail</label>
+                        <input id="email" type="email" name="email" required placeholder="seu@email.com" autocomplete="email">
+                    </div>
+
+                    <div class="reg-grid">
+                        <div class="reg-field">
+                            <label for="senha">Senha</label>
+                            <input id="senha" type="password" name="senha" required placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                        </div>
+                        <div class="reg-field">
+                            <label for="confirmar_senha">Confirmar Senha</label>
+                            <input id="confirmar_senha" type="password" name="confirmar_senha" required placeholder="Repita a senha" autocomplete="new-password">
+                        </div>
+                    </div>
+
+                    <button class="reg-submit" type="submit">
+                        Criar minha conta
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+                        </svg>
+                    </button>
+                </form>
+
+                <div class="reg-divider">ou</div>
+                <p class="reg-login-link">Já tem uma conta? <a href="{{ url_for('login') }}">Entrar agora</a></p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ── FOOTER ─────────────────────────────────────────── -->
+    <footer class="pg-footer">
+        <span>© 2026 Conecta Obras Itacoatiara</span>
+        <a href="{{ url_for('escolha_perfil') }}" style="color:#5C6B82; text-decoration:none;">Início</a>
+    </footer>
+
+</div>
+</body>
+</html>

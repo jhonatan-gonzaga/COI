@@ -1,18 +1,633 @@
-{% extends "base_public.html" %}
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0E3462">
+    <title>Conecta Obras — Itacoatiara</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=SN+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
 
-{% block content %}
-<section class="choice">
-    <p class="eyebrow">Criar conta</p>
-    <h1>Selecione o tipo de conta que deseja criar para o Conecta Obras</h1>
-    <div class="choice-grid">
-        <a class="choice-card" href="{{ url_for('cadastro_cliente') }}">
-            <span>Quero contratar serviços</span>
-            <strong>Cadastrar como Cliente</strong>
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            background: #EEF2F8;
+            font-family: 'SN Pro', ui-sans-serif, system-ui, sans-serif;
+            color: #111111;
+            line-height: 1.5;
+        }
+
+        /* ── WRAPPER ─────────────────────────────────── */
+        .lp-wrap {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 14px 14px 0;
+        }
+
+        /* ── NAVBAR ──────────────────────────────────── */
+        .lp-nav {
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 14px;
+            max-width: 1120px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .lp-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 12px 26px 12px 18px;
+            border-radius: 0 0 26px 0;
+            text-decoration: none;
+            color: #111111;
+            flex-shrink: 0;
+        }
+
+        .lp-brand-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: #fff;
+            flex-shrink: 0;
+            display: block;
+        }
+
+        .lp-brand-name {
+            font-family: 'Anton', sans-serif;
+            font-size: 23px;
+            letter-spacing: .01em;
+            white-space: nowrap;
+            color: #0E3462;
+        }
+
+        .lp-nav-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            flex: 1;
+            background: #0E3462;
+            color: #fff;
+            padding: 11px 14px 11px 28px;
+            border-radius: 24px;
+        }
+
+        .lp-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .lp-nav-links a {
+            color: rgba(255, 255, 255, .88);
+            text-decoration: none;
+            transition: color .15s;
+        }
+
+        .lp-nav-links a:hover { color: #EC8316; }
+
+        /* Botão "Criar conta" — pill com círculo+seta */
+        .lp-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 9999px;
+            padding: 6px 18px 6px 6px;
+            color: #0E3462;
+            font-weight: 700;
+            font-size: 15px;
+            white-space: nowrap;
+            text-decoration: none;
+            background: linear-gradient(to right, #ffffff 50%, #EC8316 50%);
+            background-size: 220% 100%;
+            background-position: 100% 0;
+            transition: background-position .55s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .lp-cta:hover { background-position: 0 0; }
+
+        .lp-cta-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* ── FLASH MESSAGES ──────────────────────────── */
+        .lp-alerts {
+            max-width: 1120px;
+            width: 100%;
+            margin: 14px auto 0;
+        }
+
+        .lp-alert {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 4px solid #EC8316;
+            border-radius: 12px;
+            color: #854d0e;
+            padding: 12px 16px;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        /* ── MAIN CONTENT ────────────────────────────── */
+        .lp-main {
+            max-width: 1120px;
+            width: 100%;
+            margin: 18px auto 0;
+            flex: 1;
+        }
+
+        /* ── HERO ────────────────────────────────────── */
+        .lp-hero {
+            background: #0E3462;
+            border-radius: 34px;
+            padding: 46px 48px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .lp-hero-text { flex: 1; min-width: 0; }
+
+        .lp-eyebrow {
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: .18em;
+            color: #EC8316;
+            text-transform: uppercase;
+            margin: 0 0 16px;
+        }
+
+        .lp-hero h1 {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(34px, 4.6vw, 52px);
+            line-height: .98;
+            letter-spacing: .005em;
+            color: #fff;
+            margin: 0 0 16px;
+        }
+
+        .lp-hero h1 span { color: #EC8316; }
+
+        .lp-hero-sub {
+            color: #C3D0E6;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 46ch;
+            margin: 0;
+        }
+
+        /* Botão "Entrar" dentro do hero */
+        .lp-hero-actions {
+            margin-top: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lp-hero-login {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            color: rgba(255, 255, 255, .8);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1.5px solid rgba(255, 255, 255, .22);
+            border-radius: 9999px;
+            padding: 9px 20px 9px 12px;
+            background: rgba(255, 255, 255, .07);
+            backdrop-filter: blur(4px);
+            transition: background .22s, border-color .22s, color .22s;
+        }
+
+        .lp-hero-login:hover {
+            background: rgba(255, 255, 255, .15);
+            border-color: rgba(255, 255, 255, .48);
+            color: #fff;
+        }
+
+        .lp-hero-login-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Foto real da cidade */
+        .lp-hero-photo {
+            width: 300px;
+            flex-shrink: 0;
+            align-self: stretch;
+            min-height: 240px;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            background: #1a3a6b;
+        }
+
+        .lp-hero-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
+        .lp-hero-photo::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(14, 52, 98, 0.25) 0%,
+                transparent 40%,
+                transparent 70%,
+                rgba(14, 52, 98, 0.4) 100%
+            );
+            pointer-events: none;
+        }
+
+        .lp-photo-badge {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: #EC8316;
+            color: #fff;
+            font-family: 'Anton', sans-serif;
+            font-size: 13px;
+            padding: 6px 13px;
+            border-radius: 9999px;
+            letter-spacing: .04em;
+            z-index: 1;
+        }
+
+        /* ── CHOICE CARDS ────────────────────────────── */
+        .lp-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin-top: 22px;
+        }
+
+        .lp-card {
+            position: relative;
+            background: #fff;
+            border: 2px solid #DCE4F0;
+            border-radius: 30px;
+            padding: 34px;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            text-decoration: none;
+            overflow: hidden;
+            transition: border-color .18s, transform .18s, box-shadow .18s;
+        }
+
+        .lp-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 70px;
+            height: 70px;
+            background: #E7EDF7;
+            border-bottom-left-radius: 26px;
+        }
+
+        .lp-card:hover {
+            border-color: #EC8316;
+            transform: translateY(-4px);
+            box-shadow: 0 26px 50px -26px rgba(14, 52, 98, .5);
+        }
+
+        .lp-card-icon {
+            position: relative;
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: #FDEBD6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 26px;
+            box-shadow: 0 8px 18px -8px rgba(236, 131, 22, .5);
+        }
+
+        .lp-card-icon svg { color: #EC8316; }
+
+        .lp-card-sub {
+            font-weight: 600;
+            font-size: 13px;
+            color: #5C6B82;
+            margin: 0 0 8px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .lp-card-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 28px;
+            line-height: 1.05;
+            color: #111111;
+            margin: 0 0 26px;
+        }
+
+        .lp-continue {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 9999px;
+            padding: 5px 18px 5px 5px;
+            color: #0E3462;
+            font-weight: 600;
+            font-size: 14px;
+            background: linear-gradient(to right, #ffffff 50%, #EC8316 50%);
+            background-size: 220% 100%;
+            background-position: 100% 0;
+            transition: background-position .55s cubic-bezier(.4, 0, .2, 1);
+            border: 2px solid #EC8316;
+            align-self: flex-start;
+        }
+
+        .lp-card:hover .lp-continue {
+            background-position: 0 0;
+        }
+
+        .lp-continue-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* ── FOOTER ──────────────────────────────────── */
+        .lp-footer {
+            max-width: 1120px;
+            width: 100%;
+            margin: 42px auto 0;
+            background: #0E3462;
+            color: #fff;
+            border-radius: 30px 30px 0 0;
+            padding: 34px 44px 28px;
+        }
+
+        .lp-footer-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .lp-footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .lp-footer-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: #fff;
+            padding: 2px;
+            display: block;
+        }
+
+        .lp-footer-name {
+            font-family: 'Anton', sans-serif;
+            font-size: 18px;
+        }
+
+        .lp-footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        .lp-footer-links a {
+            color: #C3D0E6;
+            text-decoration: none;
+            transition: color .15s;
+        }
+
+        .lp-footer-links a:hover { color: #EC8316; }
+
+        .lp-footer-copy {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, .18);
+            font-size: 13px;
+            color: rgba(255, 255, 255, .5);
+        }
+
+        /* ── RESPONSIVE ──────────────────────────────── */
+        @media (max-width: 860px) {
+            .lp-nav { flex-direction: column; gap: 8px; }
+            .lp-brand { border-radius: 0; }
+            .lp-nav-right { flex-wrap: wrap; gap: 12px; padding: 12px 16px; border-radius: 16px; }
+            .lp-nav-links { gap: 14px; }
+
+            .lp-hero { flex-direction: column; padding: 30px 24px; }
+            .lp-hero-photo { width: 100%; min-height: 200px; }
+            .lp-hero h1 { font-size: 36px; }
+
+            .lp-cards { grid-template-columns: 1fr; }
+            .lp-footer { padding: 24px 20px 20px; }
+            .lp-footer-top { flex-direction: column; align-items: flex-start; }
+        }
+
+        @media (max-width: 520px) {
+            .lp-wrap { padding: 8px 8px 0; }
+            .lp-nav-links { display: none; }
+            .lp-hero { padding: 24px 18px; }
+            .lp-card { padding: 24px 20px; }
+            .lp-card-title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="lp-wrap">
+
+    <!-- ── NAVBAR ────────────────────────────────────────── -->
+    <nav class="lp-nav" aria-label="Navegação principal">
+        <a class="lp-brand" href="{{ url_for('escolha_perfil') }}">
+            <img
+                class="lp-brand-logo"
+                src="{{ url_for('static', filename='img/logo.png') }}"
+                alt="Conecta Obras logo"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            >
+            <span style="display:none; width:44px; height:44px; border-radius:11px; background:#EC8316; align-items:center; justify-content:center; font-family:'Anton',sans-serif; font-size:17px; color:#0E3462; flex-shrink:0; letter-spacing:.02em;">CO</span>
+            <span class="lp-brand-name">CONECTA&nbsp;OBRAS</span>
         </a>
-        <a class="choice-card accent" href="{{ url_for('cadastro_profissional') }}">
-            <span>Quero oferecer serviços</span>
-            <strong>Cadastrar como Profissional Autônomo</strong>
-        </a>
-    </div>
-</section>
-{% endblock %}
+        <div class="lp-nav-right">
+            <ul class="lp-nav-links">
+                <li><a href="{{ url_for('escolha_perfil') }}">Início</a></li>
+            </ul>
+            <a class="lp-cta" href="{{ url_for('escolha_perfil') }}">
+                <span class="lp-cta-circle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0E3462" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+                    </svg>
+                </span>
+                <span>Criar conta</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- ── FLASH MESSAGES ────────────────────────────────── -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="lp-alerts">
+                {% for message in messages %}
+                    <div class="lp-alert">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ── MAIN ──────────────────────────────────────────── -->
+    <main class="lp-main">
+
+        <!-- HERO BANNER -->
+        <section class="lp-hero">
+            <div class="lp-hero-text">
+                <p class="lp-eyebrow">Conecta Obras · Itacoatiara</p>
+                <h1>CONECTE-SE AOS MELHORES <span>PROFISSIONAIS</span> DE ITACOATIARA</h1>
+                <p class="lp-hero-sub">Selecione o tipo de conta que deseja criar para o Conecta Obras e comece em minutos.</p>
+
+                <!-- Entrar — dentro do hero, com boa usabilidade -->
+                <div class="lp-hero-actions">
+                    <a class="lp-hero-login" href="{{ url_for('login') }}">
+                        <span class="lp-hero-login-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+                        </span>
+                        Já tenho conta — <strong>Entrar</strong>
+                    </a>
+                </div>
+            </div>
+            <div class="lp-hero-photo">
+                <span class="lp-photo-badge">ITACOATIARA · AM</span>
+                <img
+                    src="{{ url_for('static', filename='img/itacoatiara.jpg') }}"
+                    alt="Vista aérea de Itacoatiara"
+                    onerror="this.style.display='none'; this.parentElement.style.background='repeating-linear-gradient(135deg,#28477a,#28477a 11px,#22406f 11px,#22406f 22px)';"
+                >
+            </div>
+        </section>
+
+        <!-- CHOICE CARDS -->
+        <div class="lp-cards">
+
+            <!-- Cliente -->
+            <a class="lp-card" href="{{ url_for('cadastro_cliente') }}">
+                <div class="lp-card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="4"></circle>
+                        <path d="M4 21a8 8 0 0 1 16 0"></path>
+                    </svg>
+                </div>
+                <p class="lp-card-sub">Quero contratar serviços</p>
+                <p class="lp-card-title">CADASTRAR COMO CLIENTE</p>
+                <span class="lp-continue">
+                    <span class="lp-continue-circle">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E3462" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+                        </svg>
+                    </span>
+                    Continuar
+                </span>
+            </a>
+
+            <!-- Profissional -->
+            <a class="lp-card" href="{{ url_for('cadastro_profissional') }}">
+                <div class="lp-card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+                        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path>
+                        <line x1="12" y1="12" x2="12" y2="16"></line>
+                        <line x1="10" y1="14" x2="14" y2="14"></line>
+                    </svg>
+                </div>
+                <p class="lp-card-sub">Quero oferecer serviços</p>
+                <p class="lp-card-title">CADASTRAR COMO PROFISSIONAL AUTÔNOMO</p>
+                <span class="lp-continue">
+                    <span class="lp-continue-circle">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E3462" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+                        </svg>
+                    </span>
+                    Continuar
+                </span>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- ── FOOTER ─────────────────────────────────────────── -->
+    <footer class="lp-footer">
+        <div class="lp-footer-top">
+            <div class="lp-footer-brand">
+                <img
+                    class="lp-footer-logo"
+                    src="{{ url_for('static', filename='img/logo.png') }}"
+                    alt="Logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                >
+                <span style="display:none; width:34px; height:34px; border-radius:9px; background:#EC8316; align-items:center; justify-content:center; font-family:'Anton',sans-serif; font-size:14px; color:#0E3462;">CO</span>
+                <span class="lp-footer-name">CONECTA OBRAS</span>
+            </div>
+            <ul class="lp-footer-links">
+                <li><a href="{{ url_for('escolha_perfil') }}">Início</a></li>
+                <li><a href="{{ url_for('login') }}">Entrar</a></li>
+            </ul>
+        </div>
+        <p class="lp-footer-copy">© 2026 Conecta Obras Itacoatiara. Todos os direitos reservados.</p>
+    </footer>
+
+</div>
+</body>
+</html>
