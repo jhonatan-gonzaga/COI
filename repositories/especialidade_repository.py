@@ -2,8 +2,8 @@
 
 from database.connection import get_connection
 
-
 class EspecialidadeRepository:
+    #lista todas especialidades, seus nomes, ids e descrições.
     def listar(self):
         conn = get_connection()
         cur = conn.cursor()

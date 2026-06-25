@@ -4,6 +4,8 @@ from database.connection import get_connection
 
 
 class UsuarioRepository:
+
+    #autentica o usuário pegando seus dados caso a senha e o email estejam corretos.
     def autenticar(self, email, senha):
         conn = get_connection()
         cur = conn.cursor()

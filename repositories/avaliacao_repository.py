@@ -4,6 +4,8 @@ from database.connection import get_connection
 
 
 class AvaliacaoRepository:
+
+    #cria uma avaliação na tabela 'avaliacoes' com seus atributos, retornando o seu id gerado
     def criar(self, dados):
         conn = get_connection()
         cur = conn.cursor()
@@ -27,6 +29,7 @@ class AvaliacaoRepository:
         conn.close()
         return avaliacao_id
 
+    #lista todas as avaliações cadastradas no sistema, com o nome e o serviço
     def listar(self):
         conn = get_connection()
         cur = conn.cursor()
@@ -44,7 +47,8 @@ class AvaliacaoRepository:
         cur.close()
         conn.close()
         return avaliacoes
-
+    
+    # lista todas as avaliações de um profissional específico, incluindo as fotos anexadas.
     def listar_por_profissional(self, profissional_id):
         conn = get_connection()
         cur = conn.cursor()
@@ -66,7 +70,8 @@ class AvaliacaoRepository:
         cur.close()
         conn.close()
         return avaliacoes
-
+    
+    #Verifica se um serviço específico já recebeu alguma avaliação, pegando somente a primeira avaliação, se existir
     def existe_por_servico(self, servico_id):
         conn = get_connection()
         cur = conn.cursor()
