@@ -70,7 +70,7 @@ def profissional_required(f):
 
 
 def create_app():
-    app = Flask(__name__, template_folder="templates", static_folder="static")
+    app = Flask(__name__, template_folder="static/templates", static_folder="static")
     app.secret_key = os.getenv("SECRET_KEY", "conecta-obras-dev")
     app.config["UPLOAD_FOLDER"] = os.path.join(app.static_folder, "uploads")
 
