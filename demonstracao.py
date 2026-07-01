@@ -1,100 +1,189 @@
-"""Demonstracao do fluxo Cliente-Profissional usando as classes do projeto."""
+"""Demonstracao do fluxo Cliente-Profissional salvando no banco de dados."""
 
-from models.avaliacao import Avaliacao
-from models.cliente import Cliente
-from models.endereco import Endereco
-from models.especialidade import Especialidade
-from models.profissional_autonomo import ProfissionalAutonomo
+from pathlib import Path
+import sys
+
+
+ROOT_DIR = Path(__file__).resolve().parent
+REPOSITORIES_DIR = ROOT_DIR / "repositories"
+sys.path.insert(0, str(REPOSITORIES_DIR))
+
+from database.connection import get_connection
+from database.create_tables import create_tables
 from models.servico import Servico
+from services.avaliacao_service import AvaliacaoService
+from services.cliente_service import ClienteService
+from services.profissional_service import ProfissionalService
+from services.servico_service import ServicoService
 
 
-cliente = Cliente(
-    nome="Maria Oliveira",
-    telefone="(92) 99999-1111",
-    email="maria@email.com",
-    senha="123456",
-    id=1,
-)
+EMAIL_CLIENTE_DEMO = "maria.demo@conectaobras.com"
+EMAIL_PROFISSIONAL_DEMO = "joao.demo@conectaobras.com"
 
-profissional = ProfissionalAutonomo(
-    nome="Joao Santos",
-    telefone="(92) 98888-2222",
-    email="joao@email.com",
-    senha="abcdef",
-    id=2,
-)
 
-especialidade = Especialidade(
-    nome="Pedreiro",
-    descricao="Servicos de alvenaria, reformas e construcao.",
-)
-profissional.adicionar_especialidade(especialidade.nome)
+def mostrar_titulo(texto):
+    print(f"\n{texto}")
+    print("-" * 60)
 
-endereco = Endereco(
-    rua="Rua das Palmeiras",
-    numero="120",
-    bairro="Centro",
-)
 
-servico = Servico(
-    id=101,
-    descricao="Construir uma parede divisoria e fazer o acabamento.",
-    data_prevista="2026-07-05",
-    valor=850.00,
-    status="AGUARDANDO",
-    cliente=cliente,
-    profissional=profissional,
-    endereco=endereco,
-)
+def limpar_dados_demo():
+    """Remove somente os dados desta demonstracao para ela poder rodar de novo."""
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            """
+            DELETE FROM usuarios
+            WHERE email IN (%s, %s)
+            """,
+            (EMAIL_CLIENTE_DEMO, EMAIL_PROFISSIONAL_DEMO),
+        )
+        cur.execute(
+            """
+            DELETE FROM enderecos e
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM servicos s
+                WHERE s.endereco_id = e.id
+            )
+            """
+        )
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+        conn.close()
 
-print("\n1. Cliente encontra um profissional")
-print("-" * 60)
-print(cliente)
-print(profissional)
-print(f"Especialidades: {', '.join(profissional.especialidades)}")
 
-print("\n2. Cliente solicita/contrata o servico")
-print("-" * 60)
-print(cliente.solicitar_servico(servico.descricao))
-print(f"Profissional contratado: {servico.profissional.nome}")
-print(f"Endereco: {servico.endereco.formatar()}")
-print(f"Data prevista: {servico.data_prevista}")
-print(f"Valor combinado: R$ {servico.calcular_valor_final():.2f}")
-print(f"Status do servico: {servico.status}")
+def buscar_usuario(usuario_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT id, nome, telefone, email, tipo
+        FROM usuarios
+        WHERE id = %s
+        """,
+        (usuario_id,),
+    )
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
 
-print("\n3. Profissional aceita o pedido")
-print("-" * 60)
-servico.alterar_status("EM_ANDAMENTO")
-print(f"{profissional.nome} aceitou o servico de {cliente.nome}.")
-print(f"Status do servico: {servico.status}")
+    if not row:
+        return None
 
-print("\n4. Servico e executado e concluido")
-print("-" * 60)
-servico.concluir()
-servico.alterar_status("CONCLUIDO")
-print(f"Servico finalizado: {servico.descricao}")
-print(f"Valor final: R$ {servico.calcular_valor_final():.2f}")
-print(f"Status do servico: {servico.status}")
+    return {
+        "id": row[0],
+        "nome": row[1],
+        "telefone": row[2],
+        "email": row[3],
+        "tipo": row[4],
+    }
 
-print("\n5. Cliente avalia o profissional")
-print("-" * 60)
-avaliacao = Avaliacao(
-    nota=5,
-    comentario="Servico bem feito, dentro do prazo e com otimo acabamento.",
-)
-dados_avaliacao = cliente.avaliar_servico(
-    nota=avaliacao.nota,
-    comentario=avaliacao.comentario,
-)
 
-print(f"Nota registrada: {avaliacao.nota}/5")
-print(f"Comentario: {avaliacao.comentario}")
-print(f"Avaliacao valida: {'Sim' if avaliacao.validar_nota() else 'Nao'}")
-print(f"Dados retornados pelo cliente: {dados_avaliacao}")
+def main():
+    create_tables(ensure_database=True)
+    limpar_dados_demo()
 
-print("\n6. Resumo do fluxo")
-print("-" * 60)
-print(f"Cliente: {cliente.nome}")
-print(f"Profissional: {profissional.nome}")
-print(f"Servico: {servico.descricao}")
-print(f"Status final: {servico.status}")
+    cliente_service = ClienteService()
+    profissional_service = ProfissionalService()
+    servico_service = ServicoService()
+    avaliacao_service = AvaliacaoService()
+
+    mostrar_titulo("1. Cliente e profissional sao cadastrados")
+    cliente_id = cliente_service.criar_cliente(
+        nome="Maria Oliveira",
+        telefone="(92) 99999-1111",
+        email=EMAIL_CLIENTE_DEMO,
+        senha="123456",
+    )
+    profissional_id = profissional_service.criar_profissional(
+        nome="Joao Santos",
+        telefone="(92) 98888-2222",
+        email=EMAIL_PROFISSIONAL_DEMO,
+        senha="abcdef",
+        especialidades=["Pedreiro"],
+    )
+
+    cliente = buscar_usuario(cliente_id)
+    profissional = profissional_service.buscar_profissional(profissional_id)
+
+    print(f"Cliente salvo com id {cliente_id}: {cliente['nome']} ({cliente['email']})")
+    print(f"Profissional salvo com id {profissional_id}: {profissional.nome} ({profissional.email})")
+    print(f"Especialidades: {', '.join(profissional.especialidades)}")
+
+    mostrar_titulo("2. Cliente solicita/contrata o servico")
+    servico_id = servico_service.criar_servico(
+        {
+            "descricao": "Construir uma parede divisoria e fazer o acabamento.",
+            "data_prevista": "2026-07-05",
+            "valor": 850.00,
+            "status": Servico.STATUS_AGUARDANDO,
+            "cliente_id": cliente_id,
+            "profissional_id": profissional_id,
+            "rua": "Rua das Palmeiras",
+            "numero": "120",
+            "bairro": "Centro",
+        }
+    )
+    servico = servico_service.buscar_servico(servico_id)
+
+    print(f"Servico salvo com id {servico_id}")
+    print(f"Descricao: {servico['descricao']}")
+    print(f"Profissional contratado: {servico['profissional']}")
+    print(f"Endereco: {servico['rua']}, {servico['numero']} - {servico['bairro']}")
+    print(f"Data prevista: {servico['data_prevista']}")
+    print(f"Valor combinado: R$ {servico['valor']:.2f}")
+    print(f"Status do servico: {servico['status']}")
+
+    mostrar_titulo("3. Profissional aceita o pedido")
+    servico_service.alterar_status(servico_id, Servico.STATUS_EM_ANDAMENTO)
+    servico = servico_service.buscar_servico(servico_id)
+
+    print(f"{profissional.nome} aceitou o servico de {cliente['nome']}.")
+    print(f"Status salvo no banco: {servico['status']}")
+
+    mostrar_titulo("4. Servico e executado e concluido")
+    servico_service.alterar_status(servico_id, Servico.STATUS_CONCLUIDO)
+    servico = servico_service.buscar_servico(servico_id)
+
+    print(f"Servico finalizado: {servico['descricao']}")
+    print(f"Valor final: R$ {servico['valor']:.2f}")
+    print(f"Status salvo no banco: {servico['status']}")
+
+    mostrar_titulo("5. Cliente avalia o profissional")
+    avaliacao_id = avaliacao_service.criar_avaliacao(
+        {
+            "nota": 5,
+            "comentario": "Servico bem feito, dentro do prazo e com otimo acabamento.",
+            "servico_id": servico_id,
+            "cliente_id": cliente_id,
+            "profissional_id": profissional_id,
+        }
+    )
+
+    avaliacoes = avaliacao_service.listar_por_profissional(profissional_id)
+    avaliacao = next(item for item in avaliacoes if item["id"] == avaliacao_id)
+
+    print(f"Avaliacao salva com id {avaliacao_id}")
+    print(f"Nota registrada: {avaliacao['nota']}/5")
+    print(f"Comentario: {avaliacao['comentario']}")
+    print(f"Cliente avaliador: {avaliacao['cliente']}")
+
+    mostrar_titulo("6. Resumo salvo no banco")
+    servico = servico_service.buscar_servico(servico_id)
+    profissional_publico = profissional_service.buscar_perfil_publico(profissional_id)
+
+    print(f"Cliente: {servico['cliente']}")
+    print(f"Profissional: {servico['profissional']}")
+    print(f"Servico: {servico['descricao']}")
+    print(f"Status final: {servico['status']}")
+    print(f"Avaliado: {'Sim' if servico['avaliado'] else 'Nao'}")
+    print(f"Nota media do profissional: {profissional_publico['nota_media']}")
+
+
+if __name__ == "__main__":
+    main()
